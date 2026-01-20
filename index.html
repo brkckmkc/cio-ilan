@@ -75,30 +75,31 @@ button{
     padding:18px;
     font-size:22px;
     font-weight:bold;
+    border-bottom:10px solid #fff; /* kalın beyaz çizgi */
 }
+
 
 .alt-baslik{
     background:#000;
     color:#fff;
     text-align:center;
-    padding:12px;
+    padding:18px;
     font-size:16px;
-    margin-top:15px;
+    margin-top:1px;
 }
 
 .icerik{
     text-align:center;
-    padding:20px;
-    line-height:1.8;
-    font-size:15px;
+    padding:10px;
+    line-height:2;
+    font-size:20px;
 }
 
 .uyari{
     background:#000;
-    color:#fff;
+    color:#94eb63;
     text-align:center;
-    padding:12px;
-    margin-top:20px;
+    padding:18px;
     font-weight:bold;
 }
 
@@ -125,9 +126,9 @@ button{
 
 <input id="baslikInput" placeholder="Araç Başlığı" oninput="canli()">
 
-<textarea id="ozellikInput" rows="10" placeholder="Araç özellikleri" oninput="canli()"></textarea>
+<textarea id="ozellikInput" rows="40" placeholder="Araç özellikleri" oninput="canli()"></textarea>
 
-<textarea id="eksperInput" rows="6" placeholder="Eksper durumu" oninput="canli()"></textarea>
+<textarea id="eksperInput" rows="10" placeholder="Eksper durumu" oninput="canli()"></textarea>
 
 <button onclick="resmiYukle()">🖼 Resmi Yükle </button>
 

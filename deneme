@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>CİO MOTORS İlan Oluşturucu</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#eaeaea;
+    padding:20px;
+}
+
+.app{
+    display:flex;
+    gap:20px;
+    max-width:1500px;
+    margin:auto;
+}
+
+/* SOL PANEL */
+.panel-sol{
+    width:35%;
+    background:#fff;
+    padding:20px;
+    border-radius:6px;
+}
+
+input, textarea, select{
+    width:100%;
+    padding:8px;
+    margin-bottom:8px;
+    box-sizing:border-box;
+}
+
+button{
+    padding:10px 18px;
+    margin-right:6px;
+    cursor:pointer;
+}
+
+/* SAĞ PANEL */
+.panel-sag{
+    width:65%;
+    background:#f5f5f5;
+    padding:10px;
+    overflow:auto;
+}
+
+#ilan-wrapper{
+    display:flex;
+    justify-content:center;
+}
+
+#ilan{
+    width:100%;
+    transform-origin: top center;
+    transition: transform 0.15s ease;
+}
+
+/* İLAN */
+
+
+.banner img{
+    width:100%;
+    display:block;
+}
+
+.siyah-baslik{
+    background:#000;
+    color:#fff;
+    text-align:center;
+    padding:18px;
+    font-size:14px;
+    font-weight:bold;
+    border-bottom:10px solid #fff; /* kalın beyaz çizgi */
+}
+
+
+.alt-baslik{
+    background:#000;
+    color:#fff;
+    text-align:center;
+    padding:18px;
+    font-size:14px;
+    margin-top:1px;
+}
+
+.icerik{
+    text-align:center;
+    padding:10px;
+    line-height:2;
+    font-size:14px;
+}
+
+.uyari{
+    background:#000;
+    color:#94eb63;
+    text-align:center;
+    padding:18px;
+    font-weight:bold;
+}
+
+.kayit{
+    padding:6px 8px;
+    border-bottom:1px solid #ddd;
+    cursor:pointer;
+}
+.kayit:hover{
+    background:#f0f0f0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SOL -->
+<div class="panel-sol">
+
+<h3>İlan Bilgileri</h3>
+
+<input id="baslikInput" placeholder="Araç Başlığı" oninput="canli()">
+
+<textarea id="ozellikInput" rows="10" placeholder="Araç özellikleri" oninput="canli()"></textarea>
+
+<textarea id="eksperInput" rows="5" placeholder="Eksper durumu" oninput="canli()"></textarea>
+
+<button onclick="resmiYukle()">🖼 Resmi Yükle </button>
+
+<h4>Resim Linki Burada</h4>
+
+<input id="sonLink" placeholder="Görsel linki" readonly>
+
+<hr>
+
+<h4>Kayıtlı İlanlar</h4>
+
+<input 
+    id="aramaInput" 
+    placeholder="Başlığa göre ara..." 
+    oninput="listele()">
+
+<div id="liste"></div>
+
+
+</div>
+
+<!-- SAĞ -->
+<div class="panel-sag">
+
+<div id="ilan">
+
+    <div class="banner">
+        <img src="img/showroom.png" crossorigin="anonymous">
+    </div>
+
+    <div class="siyah-baslik" id="baslik"></div>
+
+    <div class="alt-baslik">ARAÇ ÖZELLİKLERİ</div>
+    <div class="icerik" id="ozellikler"></div>
+
+    <div class="alt-baslik">EKSPER DURUMU</div>
+    <div class="icerik" id="eksper"></div>
+
+    <div class="uyari">GAYRİMENKUL TAKASI TEKLİF ETMEYİNİZ !</div>
+
+    <div class="banner">
+        <img src="img/footer.png" crossorigin="anonymous">
+    </div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+/* CLOUDINARY */
+const CLOUD_NAME = "dhoyvlfcj";
+const UPLOAD_PRESET = "cio_upload";
+let sonGorsel = "";
+
+/* CANLI */
+function canli(){
+    baslik.innerText = baslikInput.value;
+    ozellikler.innerHTML = duzenle(ozellikInput.value);
+    eksper.innerHTML = duzenle(eksperInput.value);
+}
+
+function duzenle(t){
+    return t.split("\n").map(s=>s.trim()).filter(Boolean).join("<br>");
+}
+
+/* RESİM YÜKLE + OTOMATİK KAYIT */
+function resmiYukle(){
+
+    const ilan = document.getElementById("ilan");
+    const hedefGenislik = 1080;
+    const scale = hedefGenislik / ilan.offsetWidth;
+
+    alert("Yükleme başladı...");
+
+    html2canvas(ilan,{
+        scale:scale,
+        useCORS:true,
+        backgroundColor:"#fff"
+    }).then(canvas=>{
+
+        canvas.toBlob(blob=>{
+
+            let fd = new FormData();
+            fd.append("file", blob);
+            fd.append("upload_preset", UPLOAD_PRESET);
+            fd.append("folder", "ilanlar");
+
+            fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{
+                method:"POST",
+                body:fd
+            })
+            .then(r=>r.json())
+            .then(d=>{
+
+                if(!d.secure_url){
+                    alert("Hata!");
+                    return;
+                }
+
+                sonGorsel = d.secure_url;
+                sonLink.value = d.secure_url;
+
+                kaydet();
+                alert("Yüklendi ve kaydedildi");
+                window.open(d.secure_url,"_blank");
+
+            });
+
+        },"image/jpeg",0.92);
+
+    });
+}
+
+/* KAYDET */
+function kaydet(){
+
+    let ilan = {
+        id:Date.now(),
+        baslik:baslikInput.value,
+        ozellik:ozellikInput.value,
+        eksper:eksperInput.value,
+        gorsel:sonGorsel
+    };
+
+    let liste = JSON.parse(localStorage.getItem("cio_ilanlar")||"[]");
+    liste.unshift(ilan);
+    localStorage.setItem("cio_ilanlar",JSON.stringify(liste));
+    listele();
+}
+
+/* LİSTELE */
+function listele(){
+
+    let arama = document.getElementById("aramaInput")?.value.toLowerCase() || "";
+    let liste = JSON.parse(localStorage.getItem("cio_ilanlar") || "[]");
+    let alan = document.getElementById("liste");
+    alan.innerHTML = "";
+
+    liste
+    .filter(i => i.baslik.toLowerCase().includes(arama))
+    .forEach((i, index) => {
+
+        let d = document.createElement("div");
+        d.className = "kayit";
+        d.innerText = i.baslik;
+
+        /* SOL TIK → YÜKLE */
+        d.onclick = () => yukle(i);
+
+        /* SAĞ TIK → SİL */
+        d.oncontextmenu = (e) => {
+            e.preventDefault();
+
+            if(confirm(`"${i.baslik}" silinsin mi?`)){
+                sil(index);
+            }
+        };
+
+        alan.appendChild(d);
+    });
+}
+
+
+function sil(index){
+    let liste = JSON.parse(localStorage.getItem("cio_ilanlar") || "[]");
+    liste.splice(index, 1);
+    localStorage.setItem("cio_ilanlar", JSON.stringify(liste));
+    listele();
+}
+
+/* ÇAĞIR */
+function yukle(i){
+    baslikInput.value = i.baslik;
+    ozellikInput.value = i.ozellik;
+    eksperInput.value = i.eksper;
+    sonLink.value = i.gorsel;
+    sonGorsel = i.gorsel;
+    canli();
+}
+
+listele();
+
+
+</script>
+
+</body>
+</html>

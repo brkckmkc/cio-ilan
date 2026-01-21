@@ -28,7 +28,7 @@ body{
     border-radius:6px;
 }
 
-input, textarea, select{
+input, textarea{
     width:100%;
     padding:8px;
     margin-bottom:8px;
@@ -57,12 +57,9 @@ button{
 #ilan{
     width:100%;
     transform-origin: top center;
-    transition: transform 0.15s ease;
 }
 
-/* İLAN */
-
-
+/* İLAN TASARIM */
 .banner img{
     width:100%;
     display:block;
@@ -75,16 +72,15 @@ button{
     padding:18px;
     font-size:14px;
     font-weight:bold;
-    border-bottom:10px solid #fff; /* kalın beyaz çizgi */
+    border-bottom:10px solid #fff;
 }
-
 
 .alt-baslik{
     background:#000;
     color:#fff;
     text-align:center;
-    padding:18px;
-    font-size:14px;
+    padding:14px;
+    font-size:13px;
     margin-top:1px;
 }
 
@@ -111,7 +107,6 @@ button{
 .kayit:hover{
     background:#f0f0f0;
 }
-
 </style>
 </head>
 
@@ -119,38 +114,32 @@ button{
 
 <div class="app">
 
-<!-- SOL -->
+<!-- SOL PANEL -->
 <div class="panel-sol">
 
 <h3>İlan Bilgileri</h3>
 
 <input id="baslikInput" placeholder="Araç Başlığı" oninput="canli()">
 
-<textarea id="ozellikInput" rows="10" placeholder="Araç özellikleri" oninput="canli()"></textarea>
+<textarea id="disInput" rows="4" placeholder="Araç Dış Tasarım" oninput="canli()"></textarea>
+<textarea id="icInput" rows="4" placeholder="Araç İç Tasarım" oninput="canli()"></textarea>
+<textarea id="guvenlikInput" rows="4" placeholder="Güvenlik ve Asistan Donanımları" oninput="canli()"></textarea>
+<textarea id="ekstraInput" rows="4" placeholder="Ekstra Donanımlar" oninput="canli()"></textarea>
 
-<textarea id="eksperInput" rows="5" placeholder="Eksper durumu" oninput="canli()"></textarea>
+<button onclick="resmiYukle()">🖼 Görsel Oluştur & Yükle</button>
 
-<button onclick="resmiYukle()">🖼 Resmi Yükle </button>
-
-<h4>Resim Linki Burada</h4>
-
-<input id="sonLink" placeholder="Görsel linki" readonly>
+<h4>Oluşan Görsel Linki</h4>
+<input id="sonLink" readonly>
 
 <hr>
 
 <h4>Kayıtlı İlanlar</h4>
-
-<input 
-    id="aramaInput" 
-    placeholder="Başlığa göre ara..." 
-    oninput="listele()">
-
+<input id="aramaInput" placeholder="Başlığa göre ara..." oninput="listele()">
 <div id="liste"></div>
-
 
 </div>
 
-<!-- SAĞ -->
+<!-- SAĞ PANEL -->
 <div class="panel-sag">
 
 <div id="ilan">
@@ -161,11 +150,25 @@ button{
 
     <div class="siyah-baslik" id="baslik"></div>
 
-    <div class="alt-baslik">ARAÇ ÖZELLİKLERİ</div>
-    <div class="icerik" id="ozellikler"></div>
+    <div id="disBlok">
+        <div class="alt-baslik">ARAÇ DIŞ TASARIM</div>
+        <div class="icerik" id="dis"></div>
+    </div>
 
-    <div class="alt-baslik">EKSPER DURUMU</div>
-    <div class="icerik" id="eksper"></div>
+    <div id="icBlok">
+        <div class="alt-baslik">ARAÇ İÇ TASARIM</div>
+        <div class="icerik" id="ic"></div>
+    </div>
+
+    <div id="guvenlikBlok">
+        <div class="alt-baslik">GÜVENLİK VE ASİSTAN DONANIMLARI</div>
+        <div class="icerik" id="guvenlik"></div>
+    </div>
+
+    <div id="ekstraBlok">
+        <div class="alt-baslik">EKSTRA DONANIMLAR</div>
+        <div class="icerik" id="ekstra"></div>
+    </div>
 
     <div class="uyari">GAYRİMENKUL TAKASI TEKLİF ETMEYİNİZ !</div>
 
@@ -174,7 +177,6 @@ button{
     </div>
 
 </div>
-
 </div>
 </div>
 
@@ -184,25 +186,35 @@ const CLOUD_NAME = "dhoyvlfcj";
 const UPLOAD_PRESET = "cio_upload";
 let sonGorsel = "";
 
-/* CANLI */
+/* CANLI GÜNCELLE */
 function canli(){
     baslik.innerText = baslikInput.value;
-    ozellikler.innerHTML = duzenle(ozellikInput.value);
-    eksper.innerHTML = duzenle(eksperInput.value);
+    blokYonet(disInput, dis, disBlok);
+    blokYonet(icInput, ic, icBlok);
+    blokYonet(guvenlikInput, guvenlik, guvenlikBlok);
+    blokYonet(ekstraInput, ekstra, ekstraBlok);
+}
+
+function blokYonet(input, hedef, blok){
+    let deger = input.value.trim();
+    if(deger === ""){
+        blok.style.display = "none";
+        hedef.innerHTML = "";
+    }else{
+        blok.style.display = "block";
+        hedef.innerHTML = duzenle(deger);
+    }
 }
 
 function duzenle(t){
     return t.split("\n").map(s=>s.trim()).filter(Boolean).join("<br>");
 }
 
-/* RESİM YÜKLE + OTOMATİK KAYIT */
+/* GÖRSEL OLUŞTUR + YÜKLE */
 function resmiYukle(){
 
     const ilan = document.getElementById("ilan");
-    const hedefGenislik = 1080;
-    const scale = hedefGenislik / ilan.offsetWidth;
-
-    alert("Yükleme başladı...");
+    const scale = 1080 / ilan.offsetWidth;
 
     html2canvas(ilan,{
         scale:scale,
@@ -223,34 +235,25 @@ function resmiYukle(){
             })
             .then(r=>r.json())
             .then(d=>{
-
-                if(!d.secure_url){
-                    alert("Hata!");
-                    return;
-                }
-
                 sonGorsel = d.secure_url;
                 sonLink.value = d.secure_url;
-
                 kaydet();
-                alert("Yüklendi ve kaydedildi");
                 window.open(d.secure_url,"_blank");
-
             });
 
         },"image/jpeg",0.92);
-
     });
 }
 
 /* KAYDET */
 function kaydet(){
-
     let ilan = {
         id:Date.now(),
         baslik:baslikInput.value,
-        ozellik:ozellikInput.value,
-        eksper:eksperInput.value,
+        dis:disInput.value,
+        ic:icInput.value,
+        guvenlik:guvenlikInput.value,
+        ekstra:ekstraInput.value,
         gorsel:sonGorsel
     };
 
@@ -262,57 +265,41 @@ function kaydet(){
 
 /* LİSTELE */
 function listele(){
-
-    let arama = document.getElementById("aramaInput")?.value.toLowerCase() || "";
-    let liste = JSON.parse(localStorage.getItem("cio_ilanlar") || "[]");
+    let arama = aramaInput.value.toLowerCase();
+    let liste = JSON.parse(localStorage.getItem("cio_ilanlar")||"[]");
     let alan = document.getElementById("liste");
     alan.innerHTML = "";
 
-    liste
-    .filter(i => i.baslik.toLowerCase().includes(arama))
-    .forEach((i, index) => {
-
+    liste.filter(i=>i.baslik.toLowerCase().includes(arama)).forEach((i,index)=>{
         let d = document.createElement("div");
         d.className = "kayit";
         d.innerText = i.baslik;
-
-        /* SOL TIK → YÜKLE */
-        d.onclick = () => yukle(i);
-
-        /* SAĞ TIK → SİL */
-        d.oncontextmenu = (e) => {
+        d.onclick = ()=>yukle(i);
+        d.oncontextmenu = e=>{
             e.preventDefault();
-
-            if(confirm(`"${i.baslik}" silinsin mi?`)){
-                sil(index);
+            if(confirm("Silinsin mi?")){
+                liste.splice(index,1);
+                localStorage.setItem("cio_ilanlar",JSON.stringify(liste));
+                listele();
             }
         };
-
         alan.appendChild(d);
     });
 }
 
-
-function sil(index){
-    let liste = JSON.parse(localStorage.getItem("cio_ilanlar") || "[]");
-    liste.splice(index, 1);
-    localStorage.setItem("cio_ilanlar", JSON.stringify(liste));
-    listele();
-}
-
-/* ÇAĞIR */
+/* YÜKLE */
 function yukle(i){
     baslikInput.value = i.baslik;
-    ozellikInput.value = i.ozellik;
-    eksperInput.value = i.eksper;
-    sonLink.value = i.gorsel;
-    sonGorsel = i.gorsel;
+    disInput.value = i.dis || "";
+    icInput.value = i.ic || "";
+    guvenlikInput.value = i.guvenlik || "";
+    ekstraInput.value = i.ekstra || "";
+    sonLink.value = i.gorsel || "";
+    sonGorsel = i.gorsel || "";
     canli();
 }
 
 listele();
-
-
 </script>
 
 </body>

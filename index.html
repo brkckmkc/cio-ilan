@@ -184,18 +184,84 @@ const CLOUD_NAME = "dhoyvlfcj";
 const UPLOAD_PRESET = "cio_upload";
 let sonGorsel = "";
 
+/* TÜRKÇE BÜYÜK HARF */
+function buyukTR(metin){
+    return metin.toLocaleUpperCase("tr-TR");
+}
+
+/* ANAHTAR KELİMEYE GÖRE GRUP */
+function gruplandir(satir){
+
+    const dis = [
+        "PANAROMİK","LED","AYNA","SENSÖR","CAM","FAR"
+    ];
+
+    const ic = [
+        "KOLTUK","KLİMA","AMBİYANS","BAGAJ",
+        "ANAHTAR","START","KOL DAYAMA"
+    ];
+
+    const guvenlik = [
+        "FREN","YOKUŞ","GÜVENLİK"
+    ];
+
+    const surus = [
+        "ASİST","KAMERA","NAVİGASYON",
+        "HIZ","ŞERİT","KÖR","YORGUNLUK"
+    ];
+
+    const teknoloji = [
+        "APPLE","BLUETOOTH","CAR PLAY","ŞARJ"
+    ];
+
+    let s = satir;
+
+    if(dis.some(k=>s.includes(k))) return "DIŞ TASARIM & DONANIM";
+    if(ic.some(k=>s.includes(k))) return "İÇ TASARIM & KONFOR";
+    if(guvenlik.some(k=>s.includes(k))) return "GÜVENLİK DONANIM";
+    if(surus.some(k=>s.includes(k))) return "SÜRÜŞ ASİSTAN & TEKNOLOJİ";
+    if(teknoloji.some(k=>s.includes(k))) return "EKSTRA DONANIM";
+
+    return "EKSTRA DONANIM";
+}
+
+/* ÖZELLİKLERİ HTML’E BAS */
+function ozellikleriBas(metin){
+
+    let gruplar = {};
+
+    metin.split("\n")
+        .map(s=>buyukTR(s.trim()))
+        .filter(Boolean)
+        .forEach(s => {
+            let g = gruplandir(s);
+            if(!gruplar[g]) gruplar[g] = [];
+            gruplar[g].push(s);
+        });
+
+    let html = "";
+
+    Object.keys(gruplar).forEach(g=>{
+        html += `<b>${g}</b><br>`;
+        gruplar[g].forEach(m=>{
+            html += `• ${m}<br>`;
+        });
+        html += "<br>";
+    });
+
+    return html;
+}
+
 /* CANLI */
 function canli(){
-    baslik.innerText = baslikInput.value;
-    ozellikler.innerHTML = duzenle(ozellikInput.value);
-    eksper.innerHTML = duzenle(eksperInput.value);
+    baslik.innerText = buyukTR(baslikInput.value);
+    ozellikler.innerHTML = ozellikleriBas(ozellikInput.value);
+    eksper.innerHTML = buyukTR(
+        eksperInput.value.split("\n").filter(Boolean).join("<br>")
+    );
 }
 
-function duzenle(t){
-    return t.split("\n").map(s=>s.trim()).filter(Boolean).join("<br>");
-}
-
-/* RESİM YÜKLE + OTOMATİK KAYIT */
+/* RESİM YÜKLE + KAYIT */
 function resmiYukle(){
 
     const ilan = document.getElementById("ilan");
@@ -205,7 +271,7 @@ function resmiYukle(){
     alert("Yükleme başladı...");
 
     html2canvas(ilan,{
-        scale:scale,
+        scale,
         useCORS:true,
         backgroundColor:"#fff"
     }).then(canvas=>{
@@ -223,23 +289,15 @@ function resmiYukle(){
             })
             .then(r=>r.json())
             .then(d=>{
-
-                if(!d.secure_url){
-                    alert("Hata!");
-                    return;
-                }
+                if(!d.secure_url){ alert("Hata"); return; }
 
                 sonGorsel = d.secure_url;
                 sonLink.value = d.secure_url;
-
                 kaydet();
-                alert("Yüklendi ve kaydedildi");
                 window.open(d.secure_url,"_blank");
-
             });
 
         },"image/jpeg",0.92);
-
     });
 }
 
@@ -248,10 +306,10 @@ function kaydet(){
 
     let ilan = {
         id:Date.now(),
-        baslik:baslikInput.value,
-        ozellik:ozellikInput.value,
-        eksper:eksperInput.value,
-        gorsel:sonGorsel
+        baslik: buyukTR(baslikInput.value),
+        ozellik: buyukTR(ozellikInput.value),
+        eksper: buyukTR(eksperInput.value),
+        gorsel: sonGorsel
     };
 
     let liste = JSON.parse(localStorage.getItem("cio_ilanlar")||"[]");
@@ -260,59 +318,45 @@ function kaydet(){
     listele();
 }
 
-/* LİSTELE */
+/* LİSTE */
 function listele(){
-
-    let arama = document.getElementById("aramaInput")?.value.toLowerCase() || "";
-    let liste = JSON.parse(localStorage.getItem("cio_ilanlar") || "[]");
+    let arama = buyukTR(aramaInput.value || "");
+    let liste = JSON.parse(localStorage.getItem("cio_ilanlar")||"[]");
     let alan = document.getElementById("liste");
     alan.innerHTML = "";
 
     liste
-    .filter(i => i.baslik.toLowerCase().includes(arama))
-    .forEach((i, index) => {
-
+    .filter(i => i.baslik.includes(arama))
+    .forEach((i,index)=>{
         let d = document.createElement("div");
-        d.className = "kayit";
-        d.innerText = i.baslik;
-
-        /* SOL TIK → YÜKLE */
-        d.onclick = () => yukle(i);
-
-        /* SAĞ TIK → SİL */
-        d.oncontextmenu = (e) => {
+        d.className="kayit";
+        d.innerText=i.baslik;
+        d.onclick=()=>yukle(i);
+        d.oncontextmenu=e=>{
             e.preventDefault();
-
-            if(confirm(`"${i.baslik}" silinsin mi?`)){
-                sil(index);
-            }
+            if(confirm("Silinsin mi?")) sil(index);
         };
-
         alan.appendChild(d);
     });
 }
 
-
-function sil(index){
-    let liste = JSON.parse(localStorage.getItem("cio_ilanlar") || "[]");
-    liste.splice(index, 1);
-    localStorage.setItem("cio_ilanlar", JSON.stringify(liste));
+function sil(i){
+    let l = JSON.parse(localStorage.getItem("cio_ilanlar"));
+    l.splice(i,1);
+    localStorage.setItem("cio_ilanlar",JSON.stringify(l));
     listele();
 }
 
-/* ÇAĞIR */
 function yukle(i){
-    baslikInput.value = i.baslik;
-    ozellikInput.value = i.ozellik;
-    eksperInput.value = i.eksper;
-    sonLink.value = i.gorsel;
-    sonGorsel = i.gorsel;
+    baslikInput.value=i.baslik;
+    ozellikInput.value=i.ozellik;
+    eksperInput.value=i.eksper;
+    sonLink.value=i.gorsel;
+    sonGorsel=i.gorsel;
     canli();
 }
 
 listele();
-
-
 </script>
 
 </body>

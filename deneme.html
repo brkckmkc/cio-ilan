@@ -49,17 +49,11 @@ button{
     overflow:auto;
 }
 
-#ilan-wrapper{
-    display:flex;
-    justify-content:center;
-}
-
 #ilan{
     width:100%;
-    transform-origin: top center;
 }
 
-/* İLAN TASARIM */
+/* İLAN */
 .banner img{
     width:100%;
     display:block;
@@ -114,7 +108,7 @@ button{
 
 <div class="app">
 
-<!-- SOL PANEL -->
+<!-- SOL -->
 <div class="panel-sol">
 
 <h3>İlan Bilgileri</h3>
@@ -125,6 +119,8 @@ button{
 <textarea id="icInput" rows="4" placeholder="Araç İç Tasarım" oninput="canli()"></textarea>
 <textarea id="guvenlikInput" rows="4" placeholder="Güvenlik ve Asistan Donanımları" oninput="canli()"></textarea>
 <textarea id="ekstraInput" rows="4" placeholder="Ekstra Donanımlar" oninput="canli()"></textarea>
+
+<textarea id="eksperInput" rows="4" placeholder="Eksper Durumu" oninput="canli()"></textarea>
 
 <button onclick="resmiYukle()">🖼 Görsel Oluştur & Yükle</button>
 
@@ -139,7 +135,7 @@ button{
 
 </div>
 
-<!-- SAĞ PANEL -->
+<!-- SAĞ -->
 <div class="panel-sag">
 
 <div id="ilan">
@@ -151,23 +147,28 @@ button{
     <div class="siyah-baslik" id="baslik"></div>
 
     <div id="disBlok">
-        <div class="alt-baslik">ARAÇ DIŞ TASARIM</div>
+        <div class="alt-baslik">DIŞ TASARIM</div>
         <div class="icerik" id="dis"></div>
     </div>
 
     <div id="icBlok">
-        <div class="alt-baslik">ARAÇ İÇ TASARIM</div>
+        <div class="alt-baslik">İÇ TASARIM</div>
         <div class="icerik" id="ic"></div>
     </div>
 
     <div id="guvenlikBlok">
-        <div class="alt-baslik">GÜVENLİK VE ASİSTAN DONANIMLARI</div>
+        <div class="alt-baslik">GÜVENLİK VE ASİSTAN</div>
         <div class="icerik" id="guvenlik"></div>
     </div>
 
     <div id="ekstraBlok">
         <div class="alt-baslik">EKSTRA DONANIMLAR</div>
         <div class="icerik" id="ekstra"></div>
+    </div>
+
+    <div id="eksperBlok">
+        <div class="alt-baslik">EKSPER DURUMU</div>
+        <div class="icerik" id="eksper"></div>
     </div>
 
     <div class="uyari">GAYRİMENKUL TAKASI TEKLİF ETMEYİNİZ !</div>
@@ -186,13 +187,15 @@ const CLOUD_NAME = "dhoyvlfcj";
 const UPLOAD_PRESET = "cio_upload";
 let sonGorsel = "";
 
-/* CANLI GÜNCELLE */
+/* CANLI */
 function canli(){
     baslik.innerText = baslikInput.value;
+
     blokYonet(disInput, dis, disBlok);
     blokYonet(icInput, ic, icBlok);
     blokYonet(guvenlikInput, guvenlik, guvenlikBlok);
     blokYonet(ekstraInput, ekstra, ekstraBlok);
+    blokYonet(eksperInput, eksper, eksperBlok);
 }
 
 function blokYonet(input, hedef, blok){
@@ -212,7 +215,6 @@ function duzenle(t){
 
 /* GÖRSEL OLUŞTUR + YÜKLE */
 function resmiYukle(){
-
     const ilan = document.getElementById("ilan");
     const scale = 1080 / ilan.offsetWidth;
 
@@ -221,9 +223,7 @@ function resmiYukle(){
         useCORS:true,
         backgroundColor:"#fff"
     }).then(canvas=>{
-
         canvas.toBlob(blob=>{
-
             let fd = new FormData();
             fd.append("file", blob);
             fd.append("upload_preset", UPLOAD_PRESET);
@@ -240,7 +240,6 @@ function resmiYukle(){
                 kaydet();
                 window.open(d.secure_url,"_blank");
             });
-
         },"image/jpeg",0.92);
     });
 }
@@ -254,6 +253,7 @@ function kaydet(){
         ic:icInput.value,
         guvenlik:guvenlikInput.value,
         ekstra:ekstraInput.value,
+        eksper:eksperInput.value,
         gorsel:sonGorsel
     };
 
@@ -294,6 +294,7 @@ function yukle(i){
     icInput.value = i.ic || "";
     guvenlikInput.value = i.guvenlik || "";
     ekstraInput.value = i.ekstra || "";
+    eksperInput.value = i.eksper || "";
     sonLink.value = i.gorsel || "";
     sonGorsel = i.gorsel || "";
     canli();

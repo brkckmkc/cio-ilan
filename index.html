@@ -193,25 +193,26 @@ function buyukTR(metin){
 function gruplandir(satir){
 
     const dis = [
-        "PANAROMİK","LED","AYNA","SENSÖR","CAM","FAR"
+        "PANAROMİK","LED","AYNA","SENSÖR","CAM","FAR","JANT"
     ];
 
     const ic = [
         "KOLTUK","KLİMA","AMBİYANS","BAGAJ",
-        "ANAHTAR","START","KOL DAYAMA"
+        "ANAHTAR","START","KOL DAYAMA","KOLTUK","YÜKSEKLİK"
     ];
 
     const guvenlik = [
-        "FREN","YOKUŞ","GÜVENLİK"
+        "FREN","GÜVENLİK","ÇARPIŞMA"
     ];
 
     const surus = [
         "ASİST","KAMERA","NAVİGASYON",
-        "HIZ","ŞERİT","KÖR","YORGUNLUK"
+        "HIZ","ŞERİT","KÖR","YORGUNLUK","YOKUŞ","START","SABİT","LİMİTÖR",
+        "YAĞMUR SENSÖRÜ","FAR SENSÖRÜ"
     ];
 
     const teknoloji = [
-        "APPLE","BLUETOOTH","CAR PLAY","ŞARJ"
+        "APPLE","BLUETOOTH","CAR PLAY","ŞARJ","BLUETOOTH"
     ];
 
     let s = satir;
@@ -244,7 +245,7 @@ function ozellikleriBas(metin){
     Object.keys(gruplar).forEach(g=>{
         html += `<b>${g}</b><br>`;
         gruplar[g].forEach(m=>{
-            html += `• ${m}<br>`;
+            html += `${m}<br>`;
         });
         html += "<br>";
     });

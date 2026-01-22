@@ -188,13 +188,17 @@ button{
     <div class="alt-baslik">ARAÇ ÖZELLİKLERİ</div>
     <div class="icerik" id="ozellikler"></div>
 
+    <div id="eksper-blok">
     <div class="alt-baslik">EKSPER DURUMU</div>
     <div class="icerik" id="eksper"></div>
+    </div>
 
     <div class="uyari">GAYRİMENKUL TAKASI TEKLİF ETMEYİNİZ !</div>
 
     <div class="banner">
         <img src="img/footer.png" crossorigin="anonymous">
+
+    
     </div>
 
 </div>
@@ -203,6 +207,15 @@ button{
 </div>
 
 <script>
+
+const KATEGORI_SIRASI = [
+    "DIŞ TASARIM & DONANIM",
+    "İÇ TASARIM & KONFOR",
+    "GÜVENLİK DONANIM",
+    "SÜRÜŞ ASİSTAN & TEKNOLOJİ",
+    "EKSTRA DONANIM"
+];
+
 /* CLOUDINARY */
 const CLOUD_NAME = "dhoyvlfcj";
 const UPLOAD_PRESET = "cio_upload";
@@ -232,7 +245,7 @@ function gruplandir(satir){
     const surus = [
         "ASİST","360","NAVİGASYON",
         "HIZ","ŞERİT","KÖR","YORGUNLUK","YOKUŞ","START","SABİT","LİMİTÖR",
-        "YAĞMUR SENSÖRÜ","FAR SENSÖRÜ","HEAD","LAUNCH","AIR","PARK","HOLD","HOLDER","CRUISE","F1","SÜRÜŞ","ANAHTAR"
+        "YAĞMUR SENSÖRÜ","FAR SENSÖRÜ","HEAD","LAUNCH","PARK","HOLD","HOLDER","CRUISE","F1","SÜRÜŞ","ANAHTAR"
     ];
 
     const teknoloji = [
@@ -251,32 +264,34 @@ function gruplandir(satir){
 }
 
 /* ÖZELLİKLERİ HTML’E BAS */
-let dragItem = null;
-
 function ozellikleriBas(metin){
 
     let gruplar = {};
 
     metin.split("\n")
-        .map(s=>buyukTR(s.trim()))
+        .map(s => buyukTR(s.trim()))
         .filter(Boolean)
-        .forEach(s=>{
+        .forEach(s => {
             let g = gruplandir(s);
-            if(!gruplar[g]) gruplar[g]=[];
+            if(!gruplar[g]) gruplar[g] = [];
             gruplar[g].push(s);
         });
 
     let html = "";
 
-    Object.keys(gruplar).forEach(grup=>{
+    KATEGORI_SIRASI.forEach(grup => {
+
+        if(!gruplar[grup]) return;
 
         html += `
-        <div class="kategori" ondragover="event.preventDefault()" ondrop="dropKategori('${grup}', event)">
+        <div class="kategori"
+             ondragover="event.preventDefault()"
+             ondrop="dropKategori('${grup}', event)">
             <div class="kategori-baslik">${grup}</div>
             <div id="kat_${grup}">
         `;
 
-        gruplar[grup].forEach(item=>{
+        gruplar[grup].forEach(item => {
             html += `
             <div class="ozellik-item"
                  draggable="true"
@@ -294,13 +309,22 @@ function ozellikleriBas(metin){
 }
 
 
+
 /* CANLI */
 function canli(){
     baslik.innerText = buyukTR(baslikInput.value);
     ozellikler.innerHTML = ozellikleriBas(ozellikInput.value);
-    eksper.innerHTML = buyukTR(
-        eksperInput.value.split("\n").filter(Boolean).join("<br>")
-    );
+    let eksperMetin = eksperInput.value
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    if(eksperMetin.length === 0){
+        document.getElementById("eksper-blok").style.display = "none";
+    }else{
+        document.getElementById("eksper-blok").style.display = "block";
+        eksper.innerHTML = buyukTR(eksperMetin.join("<br>"));
+    }
 }
 
 /* RESİM YÜKLE + KAYIT */

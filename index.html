@@ -112,6 +112,30 @@ button{
     background:#f0f0f0;
 }
 
+
+.kategori{
+    margin-bottom:14px;
+}
+
+.kategori-baslik{
+        background:#d1d1d1;
+
+    font-weight:bold;
+    margin-bottom:6px;
+    text-align:center;
+    font-size:18px;
+}
+
+.ozellik-item{
+    padding:4px 0;
+    cursor:grab;
+}
+
+.ozellik-item.dragging{
+    opacity:0.4;
+}
+
+
 </style>
 </head>
 
@@ -193,26 +217,26 @@ function buyukTR(metin){
 function gruplandir(satir){
 
     const dis = [
-        "PANAROMİK","LED","AYNA","SENSÖR","CAM","FAR","JANT"
+        "PANAROMİK","LED","AYNA","CAM","FAR","JANT","LASTİK","TAVAN","SPOLIER"
     ];
 
     const ic = [
         "KOLTUK","KLİMA","AMBİYANS","BAGAJ",
-        "ANAHTAR","START","KOL DAYAMA","KOLTUK","YÜKSEKLİK"
+        "KOL DAYAMA","KOLTUK","YÜKSEKLİK","DERİ","DÖŞEME","ISITMA","SOĞUTMA"
     ];
 
     const guvenlik = [
-        "FREN","GÜVENLİK","ÇARPIŞMA"
+        "FREN","GÜVENLİK","ÇARPIŞMA","YAYA","KORUMA",
     ];
 
     const surus = [
-        "ASİST","KAMERA","NAVİGASYON",
+        "ASİST","360","NAVİGASYON",
         "HIZ","ŞERİT","KÖR","YORGUNLUK","YOKUŞ","START","SABİT","LİMİTÖR",
-        "YAĞMUR SENSÖRÜ","FAR SENSÖRÜ"
+        "YAĞMUR SENSÖRÜ","FAR SENSÖRÜ","HEAD","LAUNCH","AIR","PARK","HOLD","HOLDER","CRUISE","F1","SÜRÜŞ","ANAHTAR"
     ];
 
     const teknoloji = [
-        "APPLE","BLUETOOTH","CAR PLAY","ŞARJ","BLUETOOTH"
+        "APPLE","BLUETOOTH","CAR PLAY","ŞARJ","BLUETOOTH","TV","SES","HARMAN","BANG","BOSE","BURMESTER","EKRAN","AUX","CONNECT","EĞLENCE","BOWER","KABLOSUZ"
     ];
 
     let s = satir;
@@ -227,6 +251,8 @@ function gruplandir(satir){
 }
 
 /* ÖZELLİKLERİ HTML’E BAS */
+let dragItem = null;
+
 function ozellikleriBas(metin){
 
     let gruplar = {};
@@ -234,24 +260,39 @@ function ozellikleriBas(metin){
     metin.split("\n")
         .map(s=>buyukTR(s.trim()))
         .filter(Boolean)
-        .forEach(s => {
+        .forEach(s=>{
             let g = gruplandir(s);
-            if(!gruplar[g]) gruplar[g] = [];
+            if(!gruplar[g]) gruplar[g]=[];
             gruplar[g].push(s);
         });
 
     let html = "";
 
-    Object.keys(gruplar).forEach(g=>{
-        html += `<b>${g}</b><br>`;
-        gruplar[g].forEach(m=>{
-            html += `${m}<br>`;
+    Object.keys(gruplar).forEach(grup=>{
+
+        html += `
+        <div class="kategori" ondragover="event.preventDefault()" ondrop="dropKategori('${grup}', event)">
+            <div class="kategori-baslik">${grup}</div>
+            <div id="kat_${grup}">
+        `;
+
+        gruplar[grup].forEach(item=>{
+            html += `
+            <div class="ozellik-item"
+                 draggable="true"
+                 ondragstart="dragStart(this)"
+                 ondragend="dragEnd()">
+                ${item}
+            </div>
+            `;
         });
-        html += "<br>";
+
+        html += `</div></div>`;
     });
 
     return html;
 }
+
 
 /* CANLI */
 function canli(){
@@ -358,6 +399,25 @@ function yukle(i){
 }
 
 listele();
+
+function dragStart(el){
+    dragItem = el;
+    el.classList.add("dragging");
+}
+
+function dragEnd(){
+    if(dragItem) dragItem.classList.remove("dragging");
+    dragItem = null;
+}
+
+function dropKategori(grup, e){
+    e.preventDefault();
+    const hedef = e.currentTarget.querySelector("div[id^='kat_']");
+    if(dragItem && hedef){
+        hedef.appendChild(dragItem);
+    }
+}
+
 </script>
 
 </body>

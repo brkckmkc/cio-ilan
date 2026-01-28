@@ -146,7 +146,7 @@ button{
 <!-- SOL -->
 <div class="panel-sol">
 
-<h3>Cio İlan Bilgileri</h3>
+<h3>İlan Bilgileri</h3>
 
 <input id="baslikInput" placeholder="Araç Başlığı" oninput="canli()">
 
@@ -212,7 +212,8 @@ const KATEGORI_SIRASI = [
     "DIŞ TASARIM & DONANIM",
     "İÇ TASARIM & KONFOR",
     "GÜVENLİK DONANIM",
-    "SÜRÜŞ ASİSTAN & TEKNOLOJİ",
+    "SÜRÜŞ ASİSTAN",
+    "TEKNOLOJİ",
     "EKSTRA DONANIM"
 ];
 
@@ -230,35 +231,38 @@ function buyukTR(metin){
 function gruplandir(satir){
 
     const dis = [
-        "PANAROMİK","LED","AYNA","CAM","FAR","JANT","LASTİK","SPOLIER","SUNROOF","BAYİ"
+        "PANAROMİK","LED","AYNA","CAM","FAR","JANT","LASTİK","TAVAN","SPOLIER","SUNROOF"
     ];
 
     const ic = [
-        "KOLTUK","KLİMA","AMBİYANS",
-        "KOL DAYAMA","KOLTUK","YÜKSEKLİK","DERİ","DÖŞEME","ISITMA","SOĞUTMA"
+        "KOLTUK","KLİMA","AMBİYANS","BAGAJ",
+        "KOL DAYAMA","YÜKSEKLİK","DERİ","DÖŞEME","ISITMA","SOĞUTMA","HAFIZALI"
     ];
 
     const guvenlik = [
-        "FREN","GÜVENLİK","ÇARPIŞMA","YAYA","KORUMA"
+        "FREN","GÜVENLİK","ÇARPIŞMA","YAYA","KORUMA","AIRBAG","ABS","ESP"
     ];
 
     const surus = [
-        "ASİST","360","NAVİGASYON","GERİ GÖRÜŞ"
-        "HIZ","ŞERİT","KÖR","YORGUNLUK","YOKUŞ","START","SABİT","LİMİTÖR",
-        "YAĞMUR SENSÖRÜ","FAR SENSÖRÜ","HEAD","LAUNCH","PARK","HOLD","HOLDER","CRUISE","F1","SÜRÜŞ","ANAHTAR","HAYALET"
+        "ASİST","HIZ","ŞERİT","KÖR","YORGUNLUK",
+        "YOKUŞ","START","SABİT","LİMİTÖR",
+        "CRUISE","PARK","HOLD","LAUNCH","F1","SÜRÜŞ"
     ];
 
     const teknoloji = [
-        "APPLE","BLUETOOTH","CAR PLAY","ŞARJ","BLUETOOTH","TV","SES","HARMAN","BANG","BOSE","BURMESTER","EKRAN","AUX","CONNECT","EĞLENCE","BOWER","KABLOSUZ","USB"
+        "NAVİGASYON","360","APPLE","CAR PLAY","ANDROID",
+        "BLUETOOTH","EKRAN","USB","KABLOSUZ",
+        "SES","HARMAN","BOSE","BANG","BURMESTER",
+        "TV","CONNECT","ŞARJ"
     ];
 
     let s = satir;
 
-    if(dis.some(k=>s.includes(k))) return "DIŞ TASARIM & DONANIM";
-    if(ic.some(k=>s.includes(k))) return "İÇ TASARIM & KONFOR";
-    if(guvenlik.some(k=>s.includes(k))) return "GÜVENLİK DONANIM";
-    if(surus.some(k=>s.includes(k))) return "SÜRÜŞ ASİSTAN & TEKNOLOJİ";
-    if(teknoloji.some(k=>s.includes(k))) return "EKSTRA DONANIM";
+    if(dis.some(k => s.includes(k))) return "DIŞ TASARIM & DONANIM";
+    if(ic.some(k => s.includes(k))) return "İÇ TASARIM & KONFOR";
+    if(guvenlik.some(k => s.includes(k))) return "GÜVENLİK DONANIM";
+    if(surus.some(k => s.includes(k))) return "SÜRÜŞ ASİSTAN";
+    if(teknoloji.some(k => s.includes(k))) return "TEKNOLOJİ";
 
     return "EKSTRA DONANIM";
 }

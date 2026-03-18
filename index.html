@@ -3,8 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <title>CİO MOTORS İlan Oluşturucu</title>
+    
+<script type="module">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "BURAYA",
+  authDomain: "BURAYA",
+  projectId: "BURAYA",
+  storageBucket: "BURAYA",
+  messagingSenderId: "BURAYA",
+  appId: "BURAYA"
+};
+
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+
+// GLOBAL yapmak için
+window.firebaseStorage = storage;
+window.firebaseRef = ref;
+window.uploadBytes = uploadBytes;
+window.getDownloadURL = getDownloadURL;
+
+</script>
 
 <style>
 body{
@@ -335,39 +358,43 @@ function canli(){
 function resmiYukle(){
 
     const ilan = document.getElementById("ilan");
-    const hedefGenislik = 1080;
-    const scale = hedefGenislik / ilan.offsetWidth;
-
-    alert("Yükleme başladı...");
 
     html2canvas(ilan,{
-        scale,
+        scale:2,
         useCORS:true,
         backgroundColor:"#fff"
     }).then(canvas=>{
 
-        canvas.toBlob(blob=>{
+        canvas.toBlob(async blob=>{
 
-            let fd = new FormData();
-            fd.append("file", blob);
-            fd.append("upload_preset", UPLOAD_PRESET);
-            fd.append("folder", "ilanlar");
+            if(!blob){
+                alert("Görsel oluşmadı!");
+                return;
+            }
 
-            fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{
-                method:"POST",
-                body:fd
-            })
-            .then(r=>r.json())
-            .then(d=>{
-                if(!d.secure_url){ alert("Hata"); return; }
+            let dosyaAdi = "ilan_" + Date.now() + ".jpg";
 
-                sonGorsel = d.secure_url;
-                sonLink.value = d.secure_url;
+            let storageRef = window.firebaseRef(
+                window.firebaseStorage, 
+                "ilanlar/" + dosyaAdi
+            );
+
+            try {
+                await window.uploadBytes(storageRef, blob);
+                let url = await window.getDownloadURL(storageRef);
+
+                sonGorsel = url;
+                sonLink.value = url;
+
                 kaydet();
-                window.open(d.secure_url,"_blank");
-            });
+                window.open(url, "_blank");
 
-        },"image/jpeg",0.92);
+            } catch(err){
+                console.error(err);
+                alert("Yükleme hatası!");
+            }
+
+        }, "image/jpeg", 0.92);
     });
 }
 

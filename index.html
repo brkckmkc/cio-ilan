@@ -383,17 +383,20 @@ function resmiYukle(){
             try {
                 await window.uploadBytes(storageRef, blob);
                 let url = await window.getDownloadURL(storageRef);
-
+                
                 sonGorsel = url;
                 sonLink.value = url;
-
+                
                 kaydet();
+                
+                alert("✅ Yükleme başarılı!"); // EKLE
+                
                 window.open(url, "_blank");
 
-            } catch(err){
-                console.error(err);
-                alert("Yükleme hatası!");
-            }
+                catch(err){
+                    console.error(err);
+                    alert("Hata: " + err.message);
+                }
 
         }, "image/jpeg", 0.92);
     });

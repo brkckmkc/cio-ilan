@@ -156,9 +156,7 @@ button{
 
 <button onclick="resmiIndir()">💾 Görseli İndir</button>
 
-<h4>Resim Linki Burada</h4>
 
-<input id="sonLink" placeholder="Görsel linki" readonly>
 
 <hr>
 
@@ -346,8 +344,6 @@ function resmiIndir(){
         link.download = "ilan_" + Date.now() + ".jpg";
         link.href = canvas.toDataURL("image/jpeg", 0.92);
         link.click();
-
-        alert("✅ Görsel indirildi!");
     });
 }
 
@@ -359,7 +355,7 @@ function kaydet(){
         baslik: buyukTR(baslikInput.value),
         ozellik: buyukTR(ozellikInput.value),
         eksper: buyukTR(eksperInput.value),
-        gorsel: sonGorsel
+
     };
 
     let liste = JSON.parse(localStorage.getItem("cio_ilanlar")||"[]");
@@ -401,8 +397,6 @@ function yukle(i){
     baslikInput.value=i.baslik;
     ozellikInput.value=i.ozellik;
     eksperInput.value=i.eksper;
-    sonLink.value=i.gorsel;
-    sonGorsel=i.gorsel;
     canli();
 }
 

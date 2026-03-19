@@ -351,7 +351,8 @@ function resmiYukle(){
             let fd = new FormData();
             fd.append("file", blob);
             fd.append("upload_preset", UPLOAD_PRESET);
-            fd.append("folder", "ilanlar");
+            fd.append("folder", "cio/ilanlar");
+            fd.append("public_id", "ilan_" + Date.now());
 
             fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{
                 method:"POST",
@@ -361,7 +362,7 @@ function resmiYukle(){
             .then(d=>{
                 if(!d.secure_url){ alert("Hata"); return; }
 
-                sonGorsel = d.secure_url;
+                sonGorsel = d.secure_url.replace("/upload/", "/upload/f_auto,q_auto/");
                 sonLink.value = d.secure_url;
                 kaydet();
                 window.open(d.secure_url,"_blank");

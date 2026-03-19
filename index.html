@@ -154,7 +154,7 @@ button{
 
 <textarea id="eksperInput" rows="5" placeholder="Eksper durumu" oninput="canli()"></textarea>
 
-<button onclick="resmiYukle()">🖼 Resmi Yükle </button>
+<button onclick="resmiIndir()">💾 Görseli İndir</button>
 
 <h4>Resim Linki Burada</h4>
 
@@ -332,43 +332,22 @@ function canli(){
 }
 
 /* RESİM YÜKLE + KAYIT */
-function resmiYukle(){
+function resmiIndir(){
 
     const ilan = document.getElementById("ilan");
-    const hedefGenislik = 1080;
-    const scale = hedefGenislik / ilan.offsetWidth;
-
-    alert("Yükleme başladı...");
 
     html2canvas(ilan,{
-        scale,
+        scale:2,
         useCORS:true,
         backgroundColor:"#fff"
     }).then(canvas=>{
 
-        canvas.toBlob(blob=>{
+        let link = document.createElement("a");
+        link.download = "ilan_" + Date.now() + ".jpg";
+        link.href = canvas.toDataURL("image/jpeg", 0.92);
+        link.click();
 
-            let fd = new FormData();
-            fd.append("file", blob);
-            fd.append("upload_preset", UPLOAD_PRESET);
-            fd.append("folder", "cio/ilanlar");
-            fd.append("public_id", "ilan_" + Date.now());
-
-            fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{
-                method:"POST",
-                body:fd
-            })
-            .then(r=>r.json())
-            .then(d=>{
-                if(!d.secure_url){ alert("Hata"); return; }
-
-                sonGorsel = d.secure_url.replace("/upload/", "/upload/f_auto,q_auto/");
-                sonLink.value = d.secure_url;
-                kaydet();
-                window.open(d.secure_url,"_blank");
-            });
-
-        },"image/jpeg",0.92);
+        alert("✅ Görsel indirildi!");
     });
 }
 

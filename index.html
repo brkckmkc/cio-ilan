@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Oluştur (Burak Çakmakçı)</title>
+<title>İlan Oluşturucu (Burak Çakmakçı)</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -55,7 +55,7 @@ button{
 }
 
 #ilan{
-    width:800px;   /* BURAYI değiştir */
+    width:1400px;
     margin:auto;
 }
 
@@ -332,15 +332,37 @@ function resmiIndir(){
 
     const ilan = document.getElementById("ilan");
 
+    // ORİJİNAL GENİŞLİK
+    const originalWidth = ilan.offsetWidth;
+
+    // HEDEF GENİŞLİK
+    const targetWidth = 800;
+
+    // ORAN
+    const scale = targetWidth / originalWidth;
+
     html2canvas(ilan,{
-        scale:2,
+        scale: 2, // kalite için
         useCORS:true,
         backgroundColor:"#fff"
     }).then(canvas=>{
 
+        // YENİ CANVAS
+        const finalCanvas = document.createElement("canvas");
+        finalCanvas.width = targetWidth;
+        finalCanvas.height = canvas.height * scale;
+
+        const ctx = finalCanvas.getContext("2d");
+
+        ctx.drawImage(
+            canvas,
+            0,0,canvas.width,canvas.height,
+            0,0,finalCanvas.width,finalCanvas.height
+        );
+
         let link = document.createElement("a");
         link.download = "ilan_" + Date.now() + ".jpg";
-        link.href = canvas.toDataURL("image/jpeg", 0.92);
+        link.href = finalCanvas.toDataURL("image/jpeg", 0.95);
         link.click();
     });
 }

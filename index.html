@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Oluştur (Burak Çakmakçı)</title>
+<title>İlan Oluşturucu (Burak Çakmakçı)</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -16,7 +16,8 @@ body{
 .app{
     display:flex;
     gap:20px;
-    width:800px;
+    max-width:1400px;
+    width:100%;
     margin:auto;
 }
 
@@ -333,33 +334,18 @@ function resmiIndir(){
 
     const ilan = document.getElementById("ilan");
 
-    const originalWidth = ilan.offsetWidth;
     const targetWidth = 800;
+    const scale = targetWidth / ilan.offsetWidth;
 
     html2canvas(ilan,{
-        scale:2,
+        scale: scale * 2,
         useCORS:true,
         backgroundColor:"#fff"
     }).then(canvas=>{
 
-        // ORANI DOĞRU HESAPLA
-        const ratio = canvas.height / canvas.width;
-
-        const finalCanvas = document.createElement("canvas");
-        finalCanvas.width = targetWidth;
-        finalCanvas.height = targetWidth * ratio;
-
-        const ctx = finalCanvas.getContext("2d");
-
-        ctx.drawImage(
-            canvas,
-            0,0,canvas.width,canvas.height,
-            0,0,finalCanvas.width,finalCanvas.height
-        );
-
         let link = document.createElement("a");
         link.download = "ilan_" + Date.now() + ".jpg";
-        link.href = finalCanvas.toDataURL("image/jpeg", 0.95);
+        link.href = canvas.toDataURL("image/jpeg", 1.0);
         link.click();
     });
 }

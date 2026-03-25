@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Oluşturucu (Burak Çakmakçı)</title>
+<title>İlan Oluştur (Burak Çakmakçı)</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -64,6 +64,7 @@ button{
 
 .banner img{
     width:100%;
+    height:auto;
 }
 
 .siyah-baslik{
@@ -332,25 +333,21 @@ function resmiIndir(){
 
     const ilan = document.getElementById("ilan");
 
-    // ORİJİNAL GENİŞLİK
     const originalWidth = ilan.offsetWidth;
-
-    // HEDEF GENİŞLİK
     const targetWidth = 800;
 
-    // ORAN
-    const scale = targetWidth / originalWidth;
-
     html2canvas(ilan,{
-        scale: 2, // kalite için
+        scale:2,
         useCORS:true,
         backgroundColor:"#fff"
     }).then(canvas=>{
 
-        // YENİ CANVAS
+        // ORANI DOĞRU HESAPLA
+        const ratio = canvas.height / canvas.width;
+
         const finalCanvas = document.createElement("canvas");
         finalCanvas.width = targetWidth;
-        finalCanvas.height = canvas.height * scale;
+        finalCanvas.height = targetWidth * ratio;
 
         const ctx = finalCanvas.getContext("2d");
 

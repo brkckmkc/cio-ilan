@@ -2,7 +2,9 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>İlan Oluştur - Burak</title>
+<title>İlan Sistemi v3 </title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
 body{
@@ -16,7 +18,7 @@ body{
     gap:20px;
 }
 
-/* SOL PANEL */
+/* SOL */
 .panel-sol{
     width:35%;
     background:#fff;
@@ -30,7 +32,13 @@ input, textarea{
     margin-bottom:10px;
 }
 
-/* SAĞ PANEL */
+button{
+    padding:8px;
+    margin:3px;
+    cursor:pointer;
+}
+
+/* SAĞ */
 .panel-sag{
     width:65%;
 }
@@ -65,8 +73,8 @@ input, textarea{
 
 .icerik{
     padding:10px;
-    white-space:pre-line;
-    text-align:left;
+    /*  white-space:pre-line;  */
+    text-align:center;
     line-height:1.6;
 }
 
@@ -76,6 +84,15 @@ input, textarea{
     text-align:center;
     padding:15px;
     margin-top:10px;
+}
+
+.kayit{
+    padding:5px;
+    border-bottom:1px solid #ddd;
+    cursor:pointer;
+}
+.kayit:hover{
+    background:#f0f0f0;
 }
 </style>
 </head>
@@ -91,9 +108,20 @@ input, textarea{
 
 <input id="baslikInput" placeholder="Araç Başlığı" oninput="canli()">
 
-<textarea id="ozellikInput" rows="10" placeholder="Her satıra 1 özellik yaz" oninput="canli()"></textarea>
+<textarea id="ozellikInput" rows="8" placeholder="Her satıra 1 özellik" oninput="canli()"></textarea>
 
-<textarea id="eksperInput" rows="5" placeholder="Eksper durumu" oninput="canli()"></textarea>
+<textarea id="eksperInput" rows="4" placeholder="Eksper durumu" oninput="canli()"></textarea>
+
+<button onclick="kopyalaIlan()">📋 Kopyala</button>
+<button onclick="sahibindenFormat()">📄 Sahibinden</button>
+<button onclick="whatsappGonder()">📱 WhatsApp</button>
+<button onclick="pdfIndir()">🧾 PDF</button>
+<button onclick="kaydet()">💾 Kaydet</button>
+
+<hr>
+
+<h4>Kayıtlı İlanlar</h4>
+<div id="liste"></div>
 
 </div>
 
@@ -127,42 +155,148 @@ input, textarea{
 
 <script>
 
-/* TÜRKÇE BÜYÜK HARF */
+/* TÜRKÇE BÜYÜK */
 function buyukTR(metin){
     return metin.toLocaleUpperCase("tr-TR");
 }
 
-/* CANLI GÜNCELLEME */
+/* CANLI */
 function canli(){
 
-    // BAŞLIK
     document.getElementById("baslik").innerText =
         buyukTR(document.getElementById("baslikInput").value);
 
-    // ÖZELLİKLER (satır satır)
     let ozellik = document.getElementById("ozellikInput").value
         .split("\n")
-        .map(s => "• " + buyukTR(s.trim()))
-        .filter(s => s !== "• ");
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map(s => "• " + buyukTR(s));
 
     document.getElementById("ozellikler").innerText =
         ozellik.join("\n");
 
-    // EKSPER
     let eksperList = document.getElementById("eksperInput").value
         .split("\n")
         .map(s => s.trim())
         .filter(Boolean);
 
     if(eksperList.length === 0){
-        document.getElementById("eksper-blok").style.display = "none";
+        document.getElementById("eksper-blok").style.display="none";
     }else{
-        document.getElementById("eksper-blok").style.display = "block";
-
+        document.getElementById("eksper-blok").style.display="block";
         document.getElementById("eksper").innerText =
-            eksperList.map(s => "• " + buyukTR(s)).join("\n");
+            eksperList.map(s=>"• "+buyukTR(s)).join("\n");
     }
 }
+
+/* KOPYALA */
+function kopyalaIlan(){
+    navigator.clipboard.writeText(
+        document.getElementById("ilan").innerText
+    );
+    alert("Kopyalandı!");
+}
+
+/* SAHİBİNDEN */
+function sahibindenFormat(){
+
+    let baslik = baslikInput.value;
+    let ozellik = ozellikler.innerText;
+    let eksper = eksper.innerText;
+
+    let metin = `
+${baslik}
+
+-----------------------
+ARAÇ ÖZELLİKLERİ
+-----------------------
+${ozellik}
+
+-----------------------
+EKSPER DURUMU
+-----------------------
+${eksper}
+
+NOT: TAKAS YOKTUR.
+`;
+
+    navigator.clipboard.writeText(metin);
+    alert("Hazır!");
+}
+
+/* WHATSAPP */
+function whatsappGonder(){
+    let metin = document.getElementById("ilan").innerText;
+    window.open("https://wa.me/?text="+encodeURIComponent(metin));
+}
+
+/* PDF */
+function pdfIndir(){
+
+    html2pdf().from(document.getElementById("ilan")).set({
+        margin:0.5,
+        filename:"ilan.pdf",
+        html2canvas:{scale:2}
+    }).save();
+}
+
+/* KAYDET */
+function kaydet(){
+
+    let ilan = {
+        id:Date.now(),
+        baslik:baslikInput.value,
+        ozellik:ozellikInput.value,
+        eksper:eksperInput.value
+    };
+
+    let liste = JSON.parse(localStorage.getItem("ilanlar")||"[]");
+    liste.unshift(ilan);
+
+    localStorage.setItem("ilanlar",JSON.stringify(liste));
+    listele();
+}
+
+/* LİSTELE */
+function listele(){
+
+    let liste = JSON.parse(localStorage.getItem("ilanlar")||"[]");
+    let alan = document.getElementById("liste");
+    alan.innerHTML="";
+
+    liste.forEach((i,index)=>{
+        let d=document.createElement("div");
+        d.className="kayit";
+        d.innerText=i.baslik;
+
+        d.onclick=()=>yukle(i);
+
+        d.oncontextmenu=e=>{
+            e.preventDefault();
+            if(confirm("Silinsin mi?")) sil(index);
+        };
+
+        alan.appendChild(d);
+    });
+}
+
+/* YÜKLE */
+function yukle(i){
+    baslikInput.value=i.baslik;
+    ozellikInput.value=i.ozellik;
+    eksperInput.value=i.eksper;
+    canli();
+}
+
+/* SİL */
+function sil(i){
+    let liste = JSON.parse(localStorage.getItem("ilanlar"));
+    liste.splice(i,1);
+    localStorage.setItem("ilanlar",JSON.stringify(liste));
+    listele();
+}
+
+listele();
 
 </script>
 

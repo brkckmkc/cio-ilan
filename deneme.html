@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>PRO İlan Sistemi</title>
+<title>PRO İlan Sistemi v4</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -40,19 +40,24 @@ button{
 
 /* SAĞ */
 .panel-sag{
-    width:65%;
+    display:flex;
+    justify-content:center;
 }
 
 /* İLAN */
 #ilan{
+    width:350px;
+    min-width:350px;
+    max-width:350px;
     background:#fff;
-    padding:15px;
+    padding:10px;
     user-select:text;
+    margin:auto;
 }
 
 .banner img{
     width:100%;
-    pointer-events:none;
+    height:auto;
 }
 
 .siyah-baslik{

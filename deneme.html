@@ -2,13 +2,11 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>CİO MOTORS İlan Oluşturucu</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<title>İlan Oluştur - Burak</title>
 
 <style>
 body{
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial;
     background:#eaeaea;
     padding:20px;
 }
@@ -16,90 +14,68 @@ body{
 .app{
     display:flex;
     gap:20px;
-    max-width:1500px;
-    margin:auto;
 }
 
 /* SOL PANEL */
 .panel-sol{
     width:35%;
     background:#fff;
-    padding:20px;
+    padding:15px;
     border-radius:6px;
 }
 
 input, textarea{
     width:100%;
     padding:8px;
-    margin-bottom:8px;
-    box-sizing:border-box;
-}
-
-button{
-    padding:10px 18px;
-    margin-right:6px;
-    cursor:pointer;
+    margin-bottom:10px;
 }
 
 /* SAĞ PANEL */
 .panel-sag{
     width:65%;
-    background:#f5f5f5;
-    padding:10px;
-    overflow:auto;
-}
-
-#ilan{
-    width:100%;
 }
 
 /* İLAN */
+#ilan{
+    background:#fff;
+    padding:15px;
+    user-select:text;
+}
+
 .banner img{
     width:100%;
-    display:block;
+    pointer-events:none;
 }
 
 .siyah-baslik{
     background:#000;
     color:#fff;
     text-align:center;
-    padding:18px;
-    font-size:14px;
+    padding:15px;
     font-weight:bold;
-    border-bottom:10px solid #fff;
 }
 
 .alt-baslik{
     background:#000;
     color:#fff;
     text-align:center;
-    padding:14px;
-    font-size:13px;
-    margin-top:1px;
+    padding:10px;
+    margin-top:5px;
 }
 
 .icerik{
-    text-align:center;
     padding:10px;
-    line-height:2;
-    font-size:14px;
+    white-space:pre-line;
+    text-align:left;
+    line-height:1.6;
 }
 
 .uyari{
     background:#000;
     color:#94eb63;
     text-align:center;
-    padding:18px;
-    font-weight:bold;
-}
-
-.kayit{
-    padding:6px 8px;
-    border-bottom:1px solid #ddd;
-    cursor:pointer;
-}
-.kayit:hover{
-    background:#f0f0f0;
+    padding:15px;
+    margin-top:10px;
 }
 </style>
 </head>
@@ -108,198 +84,86 @@ button{
 
 <div class="app">
 
-<!-- SOL -->
+<!-- SOL PANEL -->
 <div class="panel-sol">
 
-<h3>İlan Bilgileri</h3>
+<h3>İlan Girişi</h3>
 
 <input id="baslikInput" placeholder="Araç Başlığı" oninput="canli()">
 
-<textarea id="disInput" rows="8" placeholder="Araç Dış Tasarım" oninput="canli()"></textarea>
-<textarea id="icInput" rows="8" placeholder="Araç İç Tasarım" oninput="canli()"></textarea>
-<textarea id="guvenlikInput" rows="4" placeholder="Güvenlik ve Asistan Donanımları" oninput="canli()"></textarea>
-<textarea id="ekstraInput" rows="4" placeholder="Ekstra Donanımlar" oninput="canli()"></textarea>
-<textarea id="eksperInput" rows="4" placeholder="Eksper Durumu" oninput="canli()"></textarea>
+<textarea id="ozellikInput" rows="10" placeholder="Her satıra 1 özellik yaz" oninput="canli()"></textarea>
 
-<button onclick="resmiYukle()">🖼 Görsel Oluştur & Yükle</button>
-
-<h4>Oluşan Görsel Linki</h4>
-<input id="sonLink" readonly>
-
-<hr>
-
-<h4>Kayıtlı İlanlar</h4>
-<input id="aramaInput" placeholder="Başlığa göre ara..." oninput="listele()">
-<div id="liste"></div>
+<textarea id="eksperInput" rows="5" placeholder="Eksper durumu" oninput="canli()"></textarea>
 
 </div>
 
-<!-- SAĞ -->
+<!-- SAĞ PANEL -->
 <div class="panel-sag">
 
 <div id="ilan">
 
     <div class="banner">
-        <img src="img/showroom.png" crossorigin="anonymous">
+        <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///baslik2.gif">
     </div>
 
     <div class="siyah-baslik" id="baslik"></div>
 
-    <div id="disBlok">
-        <div class="alt-baslik">DIŞ TASARIM</div>
-        <div class="icerik" id="dis"></div>
-    </div>
+    <div class="alt-baslik">ARAÇ ÖZELLİKLERİ</div>
+    <div class="icerik" id="ozellikler"></div>
 
-    <div id="icBlok">
-        <div class="alt-baslik">İÇ TASARIM</div>
-        <div class="icerik" id="ic"></div>
-    </div>
-
-    <div id="guvenlikBlok">
-        <div class="alt-baslik">GÜVENLİK VE ASİSTAN</div>
-        <div class="icerik" id="guvenlik"></div>
-    </div>
-
-    <div id="ekstraBlok">
-        <div class="alt-baslik">EKSTRA DONANIMLAR</div>
-        <div class="icerik" id="ekstra"></div>
-    </div>
-
-    <div id="eksperBlok">
+    <div id="eksper-blok">
         <div class="alt-baslik">EKSPER DURUMU</div>
         <div class="icerik" id="eksper"></div>
     </div>
 
-    <div class="uyari">GAYRİMENKUL TAKASI TEKLİF ETMEYİNİZ !</div>
-
-    <div class="banner">
-        <img src="img/footer.png" crossorigin="anonymous">
+    <div class="uyari">
+        GAYRİMENKUL TAKASI TEKLİF ETMEYİNİZ !
     </div>
 
 </div>
+
 </div>
 </div>
 
 <script>
-/* CLOUDINARY */
-const CLOUD_NAME = "dhoyvlfcj";
-const UPLOAD_PRESET = "cio_upload";
-let sonGorsel = "";
 
-/* CANLI */
-function canli(){
-    baslik.innerText = baslikInput.value;
-
-    blokYonet(disInput, dis, disBlok);
-    blokYonet(icInput, ic, icBlok);
-    blokYonet(guvenlikInput, guvenlik, guvenlikBlok);
-    blokYonet(ekstraInput, ekstra, ekstraBlok);
-    blokYonet(eksperInput, eksper, eksperBlok);
+/* TÜRKÇE BÜYÜK HARF */
+function buyukTR(metin){
+    return metin.toLocaleUpperCase("tr-TR");
 }
 
-function blokYonet(input, hedef, blok){
-    let deger = input.value.trim();
-    if(deger === ""){
-        blok.style.display = "none";
-        hedef.innerHTML = "";
+/* CANLI GÜNCELLEME */
+function canli(){
+
+    // BAŞLIK
+    document.getElementById("baslik").innerText =
+        buyukTR(document.getElementById("baslikInput").value);
+
+    // ÖZELLİKLER (satır satır)
+    let ozellik = document.getElementById("ozellikInput").value
+        .split("\n")
+        .map(s => "• " + buyukTR(s.trim()))
+        .filter(s => s !== "• ");
+
+    document.getElementById("ozellikler").innerText =
+        ozellik.join("\n");
+
+    // EKSPER
+    let eksperList = document.getElementById("eksperInput").value
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    if(eksperList.length === 0){
+        document.getElementById("eksper-blok").style.display = "none";
     }else{
-        blok.style.display = "block";
-        hedef.innerHTML = duzenle(deger);
+        document.getElementById("eksper-blok").style.display = "block";
+
+        document.getElementById("eksper").innerText =
+            eksperList.map(s => "• " + buyukTR(s)).join("\n");
     }
 }
 
-function duzenle(t){
-    return t.split("\n").map(s=>s.trim()).filter(Boolean).join("<br>");
-}
-
-/* GÖRSEL OLUŞTUR + YÜKLE */
-function resmiYukle(){
-    const ilan = document.getElementById("ilan");
-    const scale = 1080 / ilan.offsetWidth;
-
-    html2canvas(ilan,{
-        scale:scale,
-        useCORS:true,
-        backgroundColor:"#fff"
-    }).then(canvas=>{
-        canvas.toBlob(blob=>{
-            let fd = new FormData();
-            fd.append("file", blob);
-            fd.append("upload_preset", UPLOAD_PRESET);
-            fd.append("folder", "ilanlar");
-
-            fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{
-                method:"POST",
-                body:fd
-            })
-            .then(r=>r.json())
-            .then(d=>{
-                sonGorsel = d.secure_url;
-                sonLink.value = d.secure_url;
-                kaydet();
-                window.open(d.secure_url,"_blank");
-            });
-        },"image/jpeg",0.92);
-    });
-}
-
-/* KAYDET */
-function kaydet(){
-    let ilan = {
-        id:Date.now(),
-        baslik:baslikInput.value,
-        dis:disInput.value,
-        ic:icInput.value,
-        guvenlik:guvenlikInput.value,
-        ekstra:ekstraInput.value,
-        eksper:eksperInput.value,
-        gorsel:sonGorsel
-    };
-
-    let liste = JSON.parse(localStorage.getItem("cio_ilanlar")||"[]");
-    liste.unshift(ilan);
-    localStorage.setItem("cio_ilanlar",JSON.stringify(liste));
-    listele();
-}
-
-/* LİSTELE */
-function listele(){
-    let arama = aramaInput.value.toLowerCase();
-    let liste = JSON.parse(localStorage.getItem("cio_ilanlar")||"[]");
-    let alan = document.getElementById("liste");
-    alan.innerHTML = "";
-
-    liste.filter(i=>i.baslik.toLowerCase().includes(arama)).forEach((i,index)=>{
-        let d = document.createElement("div");
-        d.className = "kayit";
-        d.innerText = i.baslik;
-        d.onclick = ()=>yukle(i);
-        d.oncontextmenu = e=>{
-            e.preventDefault();
-            if(confirm("Silinsin mi?")){
-                liste.splice(index,1);
-                localStorage.setItem("cio_ilanlar",JSON.stringify(liste));
-                listele();
-            }
-        };
-        alan.appendChild(d);
-    });
-}
-
-/* YÜKLE */
-function yukle(i){
-    baslikInput.value = i.baslik;
-    disInput.value = i.dis || "";
-    icInput.value = i.ic || "";
-    guvenlikInput.value = i.guvenlik || "";
-    ekstraInput.value = i.ekstra || "";
-    eksperInput.value = i.eksper || "";
-    sonLink.value = i.gorsel || "";
-    sonGorsel = i.gorsel || "";
-    canli();
-}
-
-listele();
 </script>
 
 </body>

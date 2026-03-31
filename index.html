@@ -2,14 +2,13 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>PRO İlan Sistemi v5.5</title>
+    <title>PRO İlan Sistemi v6.1</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: sans-serif; background: #f0f0f0; padding: 20px; display: flex; gap: 20px; justify-content: center; }
         .panel-sol { width: 350px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: fit-content; }
         input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
         
-        /* DEV BUTON STİLİ */
         .all-in-one-button { 
             width: 100%; padding: 25px 10px; cursor: pointer; border: none; border-radius: 6px; 
             background: #2980b9; color: white; font-weight: bold; font-size: 17px;
@@ -18,10 +17,13 @@
         .all-in-one-button:active { transform: translateY(3px); box-shadow: 0 2px 0 #1c5982; background: #27ae60; }
         
         .kayit { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-        .kayit:hover { background: #f9f9f9; }
-        .sil-btn { color: #e74c3c; font-weight: bold; cursor: pointer; padding: 5px; }
-        
         #preview-container { background: #fff; border: 1px solid #ccc; width: 400px; padding: 10px; }
+
+        /* ÖDEME TABLOSU ÖZEL TASARIM */
+        .odeme-tablosu { width: 100%; border-collapse: separate; border-spacing: 4px; font-family: Arial, sans-serif; margin-top: 15px; }
+        .tablo-ana-baslik { background: #9B0F06; color: #EED9B9; font-weight: bold; padding: 10px; border-radius: 4px; text-align: center; font-size: 13px; border: 0; }
+        .tablo-ust-header { background: #9B0F06; color: #EED9B9; font-weight: bold; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px; }
+        .tablo-hucre { border: 1px solid #dcdcdc; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px; font-weight: bold; color: #444; background: #ffffff; }
     </style>
 </head>
 <body>
@@ -32,11 +34,11 @@
     <textarea id="ozellikInput" rows="8" placeholder="Özellikler" oninput="canli()"></textarea>
     <textarea id="eksperInput" rows="3" placeholder="Eksper Durumu" oninput="canli()"></textarea>
     
-    <!-- TEK BUTON -->
-    <button class="all-in-one-button" onclick="superFonksiyon()">🔵 İLANI SEÇ, İNDİR VE KAYDET</button>
+    <button class="all-in-one-button" onclick="superFonksiyon()">🚀 SEÇ, İNDİR VE KAYDET</button>
     
     <div id="liste" style="margin-top:20px; border-top:1px solid #eee;">
         <h4>Kayıtlı İlanlar</h4>
+        <input id="aramaInput" type="text" placeholder="🔍 İlanlarda ara..." onkeyup="listele()" style="width:100%; padding:8px; margin-bottom:10px;">
         <div id="kayitlar-alanı"></div>
     </div>
 </div>
@@ -47,9 +49,9 @@
         <div style="display:block; line-height:0; margin:0; padding:0;">
             <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///ciobanner.gif" style="width:350px; display:block; margin:0; border:0;">
         </div>
-        
-        <div style="display:block; line-height:0; margin:0; padding:0;">
-        <img src="https://www.ciooptik.com/upload/galeri/tru7z-0086/4/GaleriImg//ciokredikarti.gif" style="width:350px; display:block; margin:0; border:0;">
+ 
+                <div style="display:block; line-height:0; margin:0; padding:0;">
+            <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///ciokredikarti.gif" style="width:350px; display:block; margin:0; border:0;">
         </div>
 
         <div style="font-size:18px; color:#000; font-weight:bold; padding:10px 0; margin:0; line-height:1.2;">
@@ -60,26 +62,47 @@
             <img src="https://www.ciooptik.com/upload/galeri/tru7z-0086/4/GaleriImg//cioaracozellikleri.gif" style="width:350px; display:block; margin:0; border:0;">
         </div>
 
-        <div id="ozelliklerText" style="font-size:15px; color:#333; font-weight:bold; line-height:2; padding:10px; margin:0; white-space:pre-wrap;"></div>
+        <div id="ozelliklerText" style="font-size:14px; color:#333; font-weight:bold; line-height:1.2; padding:10px; margin:0; white-space:pre-wrap;"></div>
 
         <div id="eksper-blok" style="display:none; margin:0; padding:0;">
-            <div style="display:block; line-height:2; margin:0; padding:0;">
+            <div style="display:block; line-height:0; margin:0; padding:0;">
                 <img src="https://www.ciooptik.com/upload/galeri/tru7z-0086/4/GaleriImg//cioeksperdurumu.gif" style="width:350px; display:block; margin:0; border:0;">
             </div>
-            <div id="eksperText" style="font-size:15px; color:#333; font-weight:bold; line-height:2; padding:10px; margin:0; white-space:pre-wrap;"></div>
+            <div id="eksperText" style="font-size:14px; color:#333; font-weight:bold; line-height:1.2; padding:10px; margin:0; white-space:pre-wrap;"></div>
         </div>
 
         <div style="display:block; line-height:0; margin:0; padding:0;">
             <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///ciobilgi.gif" style="width:350px; display:block; margin:0; border:0;">
         </div>
 
-        <div style="font-size:12px; color:#000; font-weight:bold; padding:10px 0; margin:0; line-height:2;">
+        <div style="font-size:12px; color:#000; font-weight:bold; padding:10px 0; margin:0; line-height:1.1;">
             GAYRİMENKUL TAKASI TEKLİF ETMEYİNİZ!
         </div>
 
-        <div style="display:block; line-height:0; margin:0; padding:0;">
-            <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///956485565.png" style="width:350px; display:block; margin:0; border:0;">
-        </div>
+
+
+        <!-- ÖDEME TABLOSU (EN ALTA ALINDI) -->
+        <table class="odeme-tablosu">
+            <tr><td colspan="4" class="tablo-ana-baslik">1.000.000 TL İÇİN ÖRNEK ÖDEME TABLOSU</td></tr>
+            <tr>
+                <td class="tablo-ust-header">Taksit Sayısı</td>
+                <td class="tablo-ust-header">Oran</td>
+                <td class="tablo-ust-header">Aylık Ödeme</td>
+                <td class="tablo-ust-header">Geri Ödeme</td>
+            </tr>
+            <tr><td class="tablo-hucre">1</td><td class="tablo-hucre">4,60</td><td class="tablo-hucre">1.048.218</td><td class="tablo-hucre">1.048.218</td></tr>
+            <tr><td class="tablo-hucre">2</td><td class="tablo-hucre">8,01</td><td class="tablo-hucre">543.537</td><td class="tablo-hucre">1.087.075</td></tr>
+            <tr><td class="tablo-hucre">3</td><td class="tablo-hucre">9,98</td><td class="tablo-hucre">370.288</td><td class="tablo-hucre">1.110.864</td></tr>
+            <tr><td class="tablo-hucre">4</td><td class="tablo-hucre">11,85</td><td class="tablo-hucre">283.607</td><td class="tablo-hucre">1.134.430</td></tr>
+            <tr><td class="tablo-hucre">5</td><td class="tablo-hucre">13,71</td><td class="tablo-hucre">231.777</td><td class="tablo-hucre">1.158.883</td></tr>
+            <tr><td class="tablo-hucre">6</td><td class="tablo-hucre">15,73</td><td class="tablo-hucre">197.777</td><td class="tablo-hucre">1.186.662</td></tr>
+            <tr><td class="tablo-hucre">7</td><td class="tablo-hucre">17,60</td><td class="tablo-hucre">173.370</td><td class="tablo-hucre">1.213.592</td></tr>
+            <tr><td class="tablo-hucre">8</td><td class="tablo-hucre">19,47</td><td class="tablo-hucre">155.222</td><td class="tablo-hucre">1.241.773</td></tr>
+            <tr><td class="tablo-hucre">9</td><td class="tablo-hucre">21,39</td><td class="tablo-hucre">141.345</td><td class="tablo-hucre">1.272.103</td></tr>
+            <tr><td class="tablo-hucre">10</td><td class="tablo-hucre">23,26</td><td class="tablo-hucre">130.310</td><td class="tablo-hucre">1.303.101</td></tr>
+            <tr><td class="tablo-hucre">11</td><td class="tablo-hucre">25,13</td><td class="tablo-hucre">121.423</td><td class="tablo-hucre">1.335.648</td></tr>
+            <tr><td class="tablo-hucre">12</td><td class="tablo-hucre">27,05</td><td class="tablo-hucre">114.233</td><td class="tablo-hucre">1.370.802</td></tr>
+        </table>
     </div>
 </div>
 
@@ -102,7 +125,6 @@ function canli() {
     }
 }
 
-// HER ŞEYİ YAPAN ANA FONKSİYON
 async function superFonksiyon() {
     const bVal = document.getElementById("baslikInput").value;
     const oVal = document.getElementById("ozellikInput").value;
@@ -110,10 +132,8 @@ async function superFonksiyon() {
 
     if(!bVal) return alert("Başlık boş olamaz!");
 
-    // 1. ADIM: KAYDET
     kaydetSessiz(bVal, oVal, eVal);
 
-    // 2. ADIM: SEÇ VE KOPYALA
     const ilanNode = document.getElementById('ilan-yapisi');
     const range = document.createRange();
     range.selectNode(ilanNode);
@@ -121,34 +141,33 @@ async function superFonksiyon() {
     window.getSelection().addRange(range);
     document.execCommand('copy');
 
-    // 3. ADIM: JPG İNDİR
     html2canvas(ilanNode, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
         let link = document.createElement("a");
         link.download = `${buyukTR(bVal).substring(0,15)}.jpg`;
         link.href = canvas.toDataURL("image/jpeg", 0.9);
         link.click();
-        
-        alert("✔ Seçildi & Kopyalandı (Hemen yapıştırabilirsiniz)\n✔ Görsel İndirildi\n✔ İlan Kaydedildi");
+        alert("✔ Seçildi & Kopyalandı\n✔ Görsel İndirildi\n✔ Kaydedildi");
     });
 }
 
 function kaydetSessiz(b, o, e) {
-    let liste = JSON.parse(localStorage.getItem("ilan_pro_v55") || "[]");
+    let liste = JSON.parse(localStorage.getItem("ilan_pro_v61") || "[]");
     const idx = liste.findIndex(i => i.baslik === b);
     if(idx > -1) liste[idx] = { baslik:b, ozellik:o, eksper:e };
     else liste.unshift({ baslik:b, ozellik:o, eksper:e });
-    localStorage.setItem("ilan_pro_v55", JSON.stringify(liste));
+    localStorage.setItem("ilan_pro_v61", JSON.stringify(liste));
     listele();
 }
 
 function listele() {
-    let liste = JSON.parse(localStorage.getItem("ilan_pro_v55") || "[]");
+    let liste = JSON.parse(localStorage.getItem("ilan_pro_v61") || "[]");
+    let aranan = buyukTR(document.getElementById("aramaInput").value);
     let alan = document.getElementById("kayitlar-alanı");
     alan.innerHTML = "";
-    liste.forEach((i, idx) => {
+    liste.filter(item => buyukTR(item.baslik).includes(aranan)).forEach((i, idx) => {
         let d = document.createElement("div");
         d.className = "kayit";
-        d.innerHTML = `<span>${i.baslik}</span><span class="sil-btn" onclick="sil(${idx}); event.stopPropagation();">✖</span>`;
+        d.innerHTML = `<span>${i.baslik}</span><span style="color:red; font-weight:bold;" onclick="sil(${idx}); event.stopPropagation();">✖</span>`;
         d.onclick = () => {
             document.getElementById("baslikInput").value = i.baslik;
             document.getElementById("ozellikInput").value = i.ozellik;
@@ -161,9 +180,9 @@ function listele() {
 
 function sil(idx) {
     if(confirm("Silinsin mi?")) {
-        let liste = JSON.parse(localStorage.getItem("ilan_pro_v55") || "[]");
+        let liste = JSON.parse(localStorage.getItem("ilan_pro_v61") || "[]");
         liste.splice(idx, 1);
-        localStorage.setItem("ilan_pro_v55", JSON.stringify(liste));
+        localStorage.setItem("ilan_pro_v61", JSON.stringify(liste));
         listele();
     }
 }

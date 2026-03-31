@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>PRO İlan Sistemi v6.1</title>
+    <title>PRO İlan Sistemi v6.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: sans-serif; background: #f0f0f0; padding: 20px; display: flex; gap: 20px; justify-content: center; }
@@ -12,18 +12,34 @@
         .all-in-one-button { 
             width: 100%; padding: 25px 10px; cursor: pointer; border: none; border-radius: 6px; 
             background: #2980b9; color: white; font-weight: bold; font-size: 17px;
-            transition: 0.3s; box-shadow: 0 5px 0 #1c5982; margin-bottom: 15px;
+            transition: 0.3s; margin-bottom: 15px;
         }
         .all-in-one-button:active { transform: translateY(3px); box-shadow: 0 2px 0 #1c5982; background: #27ae60; }
         
         .kayit { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
         #preview-container { background: #fff; border: 1px solid #ccc; width: 400px; padding: 10px; }
 
-        /* ÖDEME TABLOSU ÖZEL TASARIM */
+        /* ÖDEME TABLOSU PASTEL TASARIM */
         .odeme-tablosu { width: 100%; border-collapse: separate; border-spacing: 4px; font-family: Arial, sans-serif; margin-top: 15px; }
-        .tablo-ana-baslik { background: #9B0F06; color: #EED9B9; font-weight: bold; padding: 10px; border-radius: 4px; text-align: center; font-size: 13px; border: 0; }
-        .tablo-ust-header { background: #9B0F06; color: #EED9B9; font-weight: bold; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px; }
-        .tablo-hucre { border: 1px solid #dcdcdc; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px; font-weight: bold; color: #444; background: #ffffff; }
+        
+        /* Ana Başlık - Pastel Mavi-Gri */
+        .tablo-ana-baslik { background: #d0d7de; color: #333; font-weight: bold; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; border: 0; }
+        
+        /* Sütun Başlıkları - Hafif Pastel Mavi */
+        .tablo-ust-header { background: #e3f2fd; color: #444; font-weight: bold; padding: 8px; border-radius: 8px; text-align: center; font-size: 12px; }
+        
+        /* Genel Hücre Yapısı */
+        .tablo-hucre { border: 1px solid #e0e0e0; padding: 8px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: bold; color: #444; background: #ffffff; }
+        
+        /* Tek Sayılı Satırlar (1, 3, 5...) - Çok Hafif Pastel Mavi */
+        .odeme-tablosu tr:nth-child(odd) .tablo-hucre { background: #f7fbff; }
+        
+        /* Çift Sayılı Satırlar (2, 4, 6...) - Çok Hafif Pastel Yeşil */
+        .odeme-tablosu tr:nth-child(even) .tablo-hucre { background: #f1f8e9; }
+        
+        /* Başlık satırlarının arka planını ezmemesi için sabitleme */
+        .odeme-tablosu tr:first-child .tablo-ana-baslik,
+        .odeme-tablosu tr:nth-child(2) .tablo-ust-header { background-color: inherit; }
     </style>
 </head>
 <body>
@@ -34,7 +50,7 @@
     <textarea id="ozellikInput" rows="8" placeholder="Özellikler" oninput="canli()"></textarea>
     <textarea id="eksperInput" rows="3" placeholder="Eksper Durumu" oninput="canli()"></textarea>
     
-    <button class="all-in-one-button" onclick="superFonksiyon()">🚀 SEÇ, İNDİR VE KAYDET</button>
+    <button class="all-in-one-button" onclick="superFonksiyon()">KAYDET</button>
     
     <div id="liste" style="margin-top:20px; border-top:1px solid #eee;">
         <h4>Kayıtlı İlanlar</h4>
@@ -48,10 +64,6 @@
         
         <div style="display:block; line-height:0; margin:0; padding:0;">
             <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///ciobanner.gif" style="width:350px; display:block; margin:0; border:0;">
-        </div>
- 
-                <div style="display:block; line-height:0; margin:0; padding:0;">
-            <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///ciokredikarti.gif" style="width:350px; display:block; margin:0; border:0;">
         </div>
 
         <div style="font-size:18px; color:#000; font-weight:bold; padding:10px 0; margin:0; line-height:1.2;">
@@ -79,30 +91,15 @@
             GAYRİMENKUL TAKASI TEKLİF ETMEYİNİZ!
         </div>
 
+        <div style="display:block; line-height:0; margin:0; padding:0;">
+            <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///ciokredikarti.gif" style="width:350px; display:block; margin:0; border:0;">
+        </div>
+        
+        <div style="display:block; line-height:0; margin:0; padding:0;">
+            <img src="https://www.ciooptik.com/upload//galeri/tru7z-0086/4/GaleriImg///956485565.png" style="width:350px; display:block; margin:0; border:0;">
+        </div>
 
 
-        <!-- ÖDEME TABLOSU (EN ALTA ALINDI) -->
-        <table class="odeme-tablosu">
-            <tr><td colspan="4" class="tablo-ana-baslik">1.000.000 TL İÇİN ÖRNEK ÖDEME TABLOSU</td></tr>
-            <tr>
-                <td class="tablo-ust-header">Taksit Sayısı</td>
-                <td class="tablo-ust-header">Oran</td>
-                <td class="tablo-ust-header">Aylık Ödeme</td>
-                <td class="tablo-ust-header">Geri Ödeme</td>
-            </tr>
-            <tr><td class="tablo-hucre">1</td><td class="tablo-hucre">4,60</td><td class="tablo-hucre">1.048.218</td><td class="tablo-hucre">1.048.218</td></tr>
-            <tr><td class="tablo-hucre">2</td><td class="tablo-hucre">8,01</td><td class="tablo-hucre">543.537</td><td class="tablo-hucre">1.087.075</td></tr>
-            <tr><td class="tablo-hucre">3</td><td class="tablo-hucre">9,98</td><td class="tablo-hucre">370.288</td><td class="tablo-hucre">1.110.864</td></tr>
-            <tr><td class="tablo-hucre">4</td><td class="tablo-hucre">11,85</td><td class="tablo-hucre">283.607</td><td class="tablo-hucre">1.134.430</td></tr>
-            <tr><td class="tablo-hucre">5</td><td class="tablo-hucre">13,71</td><td class="tablo-hucre">231.777</td><td class="tablo-hucre">1.158.883</td></tr>
-            <tr><td class="tablo-hucre">6</td><td class="tablo-hucre">15,73</td><td class="tablo-hucre">197.777</td><td class="tablo-hucre">1.186.662</td></tr>
-            <tr><td class="tablo-hucre">7</td><td class="tablo-hucre">17,60</td><td class="tablo-hucre">173.370</td><td class="tablo-hucre">1.213.592</td></tr>
-            <tr><td class="tablo-hucre">8</td><td class="tablo-hucre">19,47</td><td class="tablo-hucre">155.222</td><td class="tablo-hucre">1.241.773</td></tr>
-            <tr><td class="tablo-hucre">9</td><td class="tablo-hucre">21,39</td><td class="tablo-hucre">141.345</td><td class="tablo-hucre">1.272.103</td></tr>
-            <tr><td class="tablo-hucre">10</td><td class="tablo-hucre">23,26</td><td class="tablo-hucre">130.310</td><td class="tablo-hucre">1.303.101</td></tr>
-            <tr><td class="tablo-hucre">11</td><td class="tablo-hucre">25,13</td><td class="tablo-hucre">121.423</td><td class="tablo-hucre">1.335.648</td></tr>
-            <tr><td class="tablo-hucre">12</td><td class="tablo-hucre">27,05</td><td class="tablo-hucre">114.233</td><td class="tablo-hucre">1.370.802</td></tr>
-        </table>
     </div>
 </div>
 

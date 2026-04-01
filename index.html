@@ -10,7 +10,7 @@
         input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
         
         .all-in-one-button { 
-            width: 100%; padding: 25px 10px; cursor: pointer; border: none; border-radius: 6px; 
+            width: 100%; padding: 25px 10px; cursor: pointer; border: none; border-radius: 3px; 
             background: #2980b9; color: white; font-weight: bold; font-size: 17px;
             transition: 0.3s; margin-bottom: 15px;
         }
@@ -111,8 +111,8 @@ function canli() {
     const o = document.getElementById("ozellikInput").value;
     const e = document.getElementById("eksperInput").value;
 
-    document.getElementById("baslikText").innerText = b ? buyukTR(b) : "ARAÇ BAŞLIĞI";
-    document.getElementById("ozelliklerText").innerText = buyukTR(o);
+    document.getElementById("baslikText").innerText = b ? buyukTR(b) : "";
+    document.getElementById("ozelliklerText").innerText = buyukTR(o) ;
 
     if(e.trim()){
         document.getElementById("eksper-blok").style.display = "block";
